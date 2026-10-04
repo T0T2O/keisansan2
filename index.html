@@ -1,0 +1,785 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>けいさんスターロード</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DotGothic16&family=Dela+Gothic+One&family=M+PLUS+Rounded+1c:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --night:#1b1446; --night2:#2a2170; --deep:#120d33;
+  --cream:#fff7e8; --muted:#b9b3e6;
+  --mint:#5ee6c1; --sky:#7cc8ff; --star:#ffd35c; --coral:#ff7ea8; --lilac:#c29bff;
+  --line:rgba(255,247,232,.16);
+  --disp:"Dela Gothic One","Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;
+  --logo:"Dela Gothic One",sans-serif;
+  --lat:"Bebas Neue",Impact,sans-serif;
+  --px:"DotGothic16",monospace;
+  --body:"M PLUS Rounded 1c","Hiragino Maru Gothic ProN","Yu Gothic",system-ui,sans-serif;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%}
+body{color:var(--cream);font-family:var(--body);overflow:hidden;user-select:none;-webkit-user-select:none;
+background:radial-gradient(42% 36% at 14% -4%,rgba(56,232,255,.26) 0,transparent 62%),radial-gradient(46% 40% at 86% 0%,rgba(160,107,255,.30) 0,transparent 62%),radial-gradient(60% 48% at 50% 112%,rgba(255,84,112,.20) 0,transparent 62%),radial-gradient(90% 60% at 50% 40%,rgba(20,40,110,.35) 0,transparent 70%),linear-gradient(180deg,#081236 0%,#050b22 55%,#03071a 100%)}
+button,input{font:inherit;color:inherit}
+button{border:0;cursor:pointer;background:none}
+button:focus-visible,input:focus-visible{outline:3px solid var(--star);outline-offset:3px}
+
+/* ---- 星空 ---- */
+.sky{position:fixed;inset:0;z-index:0;background:
+  radial-gradient(ellipse at 15% 10%,rgba(194,155,255,.28),transparent 45%),
+  radial-gradient(ellipse at 90% 85%,rgba(94,230,193,.18),transparent 45%),
+  radial-gradient(ellipse at 70% 20%,rgba(255,126,168,.14),transparent 40%),
+  linear-gradient(180deg,var(--night) 0%,var(--deep) 100%)}
+.stars{position:fixed;inset:0;z-index:0;pointer-events:none}
+.stars i{position:absolute;width:var(--s);height:var(--s);border-radius:50%;background:#cfeaff;box-shadow:0 0 6px rgba(120,200,255,.8);left:var(--x);top:var(--y);opacity:.7;animation:tw var(--d) ease-in-out infinite alternate}
+@keyframes tw{from{opacity:.15}to{opacity:.95}}
+
+.app{position:relative;z-index:1;height:100dvh;display:flex;flex-direction:column}
+.screen{display:none;flex:1;min-height:0}
+.screen.on{display:flex}
+
+/* ---- 共通パーツ ---- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:60px;padding:0 34px;border-radius:999px;
+  font-family:var(--disp);font-size:22px;letter-spacing:.04em;color:#23124a;
+  background:linear-gradient(180deg,#ffe38a,var(--star));box-shadow:0 6px 0 #c9951f,0 12px 28px rgba(255,211,92,.35);transition:transform .08s}
+.btn:active{transform:translateY(4px);box-shadow:0 2px 0 #c9951f}
+.btn.ghost{background:rgba(255,255,255,.08);color:var(--cream);box-shadow:inset 0 0 0 2px var(--line);font-size:17px;min-height:48px;padding:0 22px}
+.btn.ghost:active{transform:scale(.97)}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:999px;font-size:13px;font-weight:800;background:rgba(255,255,255,.08);box-shadow:inset 0 0 0 1px var(--line)}
+.card{background:linear-gradient(180deg,rgba(42,33,112,.86),rgba(27,20,70,.9));border-radius:28px;box-shadow:inset 0 0 0 2px rgba(255,255,255,.07),0 24px 60px rgba(0,0,0,.35)}
+
+/* ---- ホーム ---- */
+#home{overflow:auto;justify-content:center;padding:clamp(16px,3vw,36px)}
+.home-wrap{width:min(1040px,100%);display:flex;flex-direction:column;gap:22px;padding-bottom:30px}
+.home-top{display:flex;justify-content:space-between;align-items:center}
+.logo{font-family:var(--disp);line-height:1.05}
+.logo small{display:block;font-family:var(--px);font-weight:700;font-size:12.5px;letter-spacing:.34em;color:#8fd9ff;margin-bottom:9px;text-shadow:0 0 12px rgba(56,232,255,.5)}
+.logo b{font-family:var(--logo);font-size:clamp(38px,6.6vw,74px);font-weight:400;line-height:1.06;letter-spacing:.02em;
+  background:linear-gradient(93deg,#e8fbff 0%,#8ff3ff 30%,#c9a6ff 62%,#ff9fd0 100%);-webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 0 18px rgba(88,220,255,.35)) drop-shadow(0 3px 0 rgba(5,12,40,.9))}
+.logo .v2{display:inline-grid;place-items:center;margin-left:.14em;width:.92em;height:.92em;font-size:.56em;vertical-align:.14em;
+  color:#fff;background:linear-gradient(150deg,#38e8ff 12%,#0a5cff 88%);border-radius:.16em;
+  box-shadow:0 0 0 3px rgba(3,8,26,.85),0 0 26px rgba(56,232,255,.75),inset 0 -3px 0 rgba(0,0,0,.25);
+  -webkit-text-fill-color:#fff;text-shadow:0 2px 0 rgba(5,40,90,.8)}
+.logo .sub-en{display:block;margin-top:10px;font-family:var(--lat);font-weight:400;font-size:clamp(13px,1.5vw,17px);letter-spacing:.52em;color:#6f8fc4}
+.gear{width:48px;height:48px;border-radius:50%;background:rgba(255,255,255,.08);box-shadow:inset 0 0 0 1px var(--line);display:grid;place-items:center}
+.lead{margin:0;color:var(--muted);font-size:16px;line-height:1.8;font-weight:700}
+.lead b{color:var(--cream)}
+.home-grid{display:grid;grid-template-columns:1.05fr 1fr;gap:18px}
+.panel{padding:24px}
+.panel h3{margin:0 0 14px;font-size:14px;letter-spacing:.14em;color:var(--muted)}
+.name-row{display:flex;gap:10px;align-items:center}
+.name-row input{flex:1;min-width:0;height:54px;border-radius:16px;border:0;padding:0 18px;font-size:20px;font-weight:800;background:rgba(0,0,0,.25);box-shadow:inset 0 0 0 2px var(--line);user-select:text;-webkit-user-select:text}
+.hint-line2{margin:12px 0 0;font-size:13px;font-weight:700;color:var(--muted)}
+.hint-line2{position:relative;padding-left:18px}
+.hint-line2::before{content:"•";position:absolute;left:4px;color:var(--mint)}
+.save-line{margin:14px 0 18px;font-weight:700;color:var(--muted);font-size:15px;min-height:22px}
+.save-line b{color:var(--star);font-family:var(--disp);font-weight:400;font-size:20px}
+.rules{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.rule{padding:14px 10px;border-radius:18px;background:rgba(0,0,0,.2);text-align:center}
+.rule b{display:block;font-family:var(--disp);font-weight:400;font-size:26px;color:var(--mint)}
+.rule span{font-size:12px;font-weight:800;color:var(--muted)}
+.start-row{margin-top:20px;display:flex;flex-direction:column;align-items:stretch;gap:8px}
+.start-row .btn{font-size:24px;min-height:70px}
+.start-row small{text-align:center;color:var(--muted);font-weight:700}
+
+/* 星図（レベル選択） */
+.galaxy{display:flex;flex-direction:column;gap:12px}
+.gx-row{display:flex;align-items:center;gap:10px}
+.gx-name{width:84px;flex:none;font-size:11.5px;font-weight:900;line-height:1.35;color:var(--c);text-shadow:0 0 10px color-mix(in srgb,var(--c) 60%,transparent)}
+.gx-planets{display:flex;gap:8px;flex:1}
+.pl{position:relative;flex:1;aspect-ratio:1;max-width:52px;border-radius:50%;display:grid;place-items:center;font-family:var(--disp);font-size:15px;color:#23124a;
+  background:radial-gradient(circle at 32% 28%,#fff 0,var(--c) 38%,color-mix(in srgb,var(--c) 55%,#1b1446) 100%);box-shadow:0 0 0 0 transparent;transition:transform .1s}
+.pl.lock{background:rgba(255,255,255,.07);color:rgba(255,255,255,.3);box-shadow:inset 0 0 0 2px rgba(255,255,255,.08);cursor:not-allowed}
+.pl.sel{box-shadow:0 0 0 3px var(--deep),0 0 0 6px var(--cream),0 0 24px var(--c);transform:scale(1.08)}
+.pl .st{position:absolute;bottom:-9px;left:50%;transform:translateX(-50%);font-size:9px;letter-spacing:-1px;color:var(--star);font-family:var(--body);white-space:nowrap;text-shadow:0 1px 2px #000}
+.gx-hint{font-size:12px;color:var(--muted);font-weight:700;margin-top:6px}
+
+/* ---- セッション上部バー ---- */
+.hud{display:none;align-items:center;gap:14px;padding:12px clamp(14px,2.4vw,28px) 0}
+.hud.on{display:flex}
+.hud .who{font-weight:800;font-size:14px;color:var(--muted);white-space:nowrap;max-width:24vw;overflow:hidden;text-overflow:ellipsis}
+.fuel{flex:1;height:14px;border-radius:99px;background:rgba(255,255,255,.1);overflow:hidden;position:relative}
+.fuel i{position:absolute;inset:0 auto 0 0;width:100%;border-radius:99px;background:linear-gradient(90deg,var(--coral),var(--star),var(--mint));transition:width .2s linear}
+.gclock{font-family:var(--disp);font-size:22px;min-width:84px;text-align:right;font-variant-numeric:tabular-nums}
+.gclock.hurry{color:var(--coral);animation:pulse 1s infinite}
+@keyframes pulse{50%{opacity:.5}}
+.quit{font-size:12px;font-weight:800;color:var(--muted);padding:6px 10px;border-radius:99px;box-shadow:inset 0 0 0 1px var(--line)}
+
+/* ---- 作戦（レベル説明）---- */
+.center{align-items:center;justify-content:center;padding:clamp(14px,3vw,34px)}
+.brief{width:min(760px,100%);padding:clamp(24px,4vw,44px);text-align:center;position:relative;overflow:hidden}
+.brief .planet-big{width:110px;height:110px;margin:0 auto 14px;border-radius:50%;display:grid;place-items:center;font-family:var(--disp);font-size:44px;color:#23124a;
+  background:radial-gradient(circle at 32% 28%,#fff 0,var(--c) 40%,color-mix(in srgb,var(--c) 50%,#1b1446) 100%);box-shadow:0 0 50px color-mix(in srgb,var(--c) 60%,transparent);position:relative}
+.brief .planet-big::after{content:"";position:absolute;inset:38% -22%;border-radius:50%;border:4px solid color-mix(in srgb,var(--c) 70%,#fff);transform:rotate(-16deg);opacity:.7}
+.eyebrow{font-weight:800;font-size:13px;letter-spacing:.24em;color:var(--c)}
+.brief h2{margin:6px 0 10px;font-family:var(--disp);font-weight:400;font-size:clamp(30px,5vw,46px)}
+.mission{display:inline-flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-bottom:18px}
+.mission .chip{font-size:15px;padding:8px 16px}
+.mission .chip b{font-family:var(--disp);font-weight:400;color:var(--star);font-size:18px}
+.tip{text-align:left;margin:0 auto 24px;max-width:600px;padding:18px 20px 18px 64px;border-radius:20px;background:rgba(0,0,0,.24);position:relative;font-weight:700;line-height:1.75;font-size:17px}
+.tip::before{content:"コツ";position:absolute;left:14px;top:18px;width:38px;height:38px;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:800;background:var(--c);color:#23124a}
+.tip em{font-style:normal;color:var(--star)}
+.tries{margin-top:12px;font-size:13px;color:var(--muted);font-weight:700;min-height:18px}
+
+/* ---- プレイ ---- */
+#play{flex-direction:column;padding:10px clamp(14px,2.4vw,28px) clamp(14px,2vw,22px);gap:12px}
+.lvbar{display:flex;align-items:center;gap:14px}
+.lvtag{display:flex;align-items:center;gap:10px}
+.lvtag .dot{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;font-family:var(--disp);font-size:18px;color:#23124a;background:radial-gradient(circle at 32% 28%,#fff 0,var(--c) 45%,color-mix(in srgb,var(--c) 55%,#1b1446))}
+.lvtag b{display:block;font-size:17px;font-weight:800}
+.lvtag small{color:var(--c);font-weight:800;font-size:12px;letter-spacing:.1em}
+.pips{flex:1;display:flex;gap:5px;justify-content:center;flex-wrap:wrap}
+.pips i{width:clamp(12px,1.6vw,18px);height:clamp(12px,1.6vw,18px);border-radius:50%;background:rgba(255,255,255,.12);transition:background .2s,transform .2s}
+.pips i.done{background:var(--c);transform:scale(1.15);box-shadow:0 0 10px var(--c)}
+.ring{position:relative;width:74px;height:74px;flex:none}
+.ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ring circle{fill:none;stroke-width:8}
+.ring .bg{stroke:rgba(255,255,255,.1)}
+.ring .fg{stroke:var(--mint);stroke-linecap:round;transition:stroke .3s}
+.ring span{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--disp);font-size:24px;font-variant-numeric:tabular-nums}
+.ring.warn .fg{stroke:var(--star)}
+.ring.danger .fg{stroke:var(--coral)}
+.ring.danger span{color:var(--coral)}
+.stage{flex:1;min-height:0;display:grid;grid-template-columns:1.25fr 1fr;gap:16px}
+.qzone{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;position:relative;overflow:hidden}
+.qcount{position:absolute;top:18px;left:22px;font-weight:800;color:var(--muted);font-size:15px}
+.eq{font-family:var(--disp);font-size:clamp(40px,7.4vw,92px);line-height:1.1;display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:.18em;text-align:center;font-variant-numeric:tabular-nums}
+.slot{display:inline-flex;align-items:center;justify-content:center;min-width:1.7em;height:1.3em;padding:0 .2em;border-radius:.22em;background:rgba(0,0,0,.28);box-shadow:inset 0 0 0 4px var(--c);color:var(--star)}
+.slot:empty::after{content:"";width:.06em;height:.8em;background:var(--star);animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.feedback{margin-top:18px;min-height:30px;font-weight:800;font-size:19px;color:var(--muted)}
+.qzone.good{animation:good .32s}
+@keyframes good{0%{box-shadow:inset 0 0 0 6px var(--mint),0 0 40px rgba(94,230,193,.5)}100%{box-shadow:inset 0 0 0 2px rgba(255,255,255,.07)}}
+.qzone.bad{box-shadow:inset 0 0 0 6px var(--coral);animation:shake .4s}
+@keyframes shake{20%,60%{transform:translateX(-10px)}40%,80%{transform:translateX(10px)}}
+.pad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:14px}
+.key{border-radius:20px;font-family:var(--disp);font-size:clamp(26px,3.6vw,40px);background:rgba(255,255,255,.09);box-shadow:inset 0 -5px 0 rgba(0,0,0,.25),inset 0 0 0 1px var(--line);min-height:56px;touch-action:manipulation}
+.key:active{transform:scale(.95);background:rgba(255,255,255,.18)}
+.key.del{font-family:var(--body);font-weight:800;font-size:18px;color:var(--coral)}
+.key.ok{font-family:var(--body);font-weight:800;font-size:22px;background:linear-gradient(180deg,#8ff2d6,var(--mint));color:#123d33;box-shadow:inset 0 -5px 0 #2fa888;grid-column:1/-1}
+
+/* ---- クリア／ミス ---- */
+.result-hero{font-family:var(--disp);font-weight:400;font-size:clamp(40px,7vw,72px);margin:4px 0 8px;line-height:1.1}
+.clear .result-hero{background:linear-gradient(90deg,var(--star),var(--mint));-webkit-background-clip:text;background-clip:text;color:transparent}
+.bigstars{font-size:54px;letter-spacing:6px;margin:4px 0 10px}
+.bigstars i{font-style:normal;color:rgba(255,255,255,.14);display:inline-block}
+.bigstars i.on{color:var(--star);text-shadow:0 0 22px rgba(255,211,92,.7);animation:pop .5s backwards}
+.bigstars i:nth-child(2){animation-delay:.18s}.bigstars i:nth-child(3){animation-delay:.36s}
+@keyframes pop{0%{transform:scale(0) rotate(-90deg)}70%{transform:scale(1.35)}100%{transform:scale(1)}}
+.stat-line{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:22px}
+.stat-line .chip{font-size:15px;padding:8px 16px}
+.stat-line .chip b{font-family:var(--disp);font-weight:400;font-size:18px;color:var(--star)}
+.miss-box{margin:0 auto 22px;max-width:520px;padding:18px;border-radius:20px;background:rgba(0,0,0,.25)}
+.miss-box .eqs{font-family:var(--disp);font-size:clamp(28px,5vw,44px)}
+.miss-box .ans{color:var(--mint)}
+.miss-box .yours{margin-top:6px;font-weight:800;color:var(--muted)}
+.miss-box .yours s{color:var(--coral)}
+.fail .result-hero{color:var(--coral)}
+.warp{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.warp i{position:absolute;height:2px;left:-30%;width:var(--w);top:var(--y);background:linear-gradient(90deg,transparent,#fff);border-radius:2px;animation:streak var(--d) linear infinite;animation-delay:var(--dl);opacity:.55}
+@keyframes streak{to{transform:translateX(180vw)}}
+.rocket{width:110px;height:110px;margin:0 auto;animation:hover 1.4s ease-in-out infinite}
+@keyframes hover{50%{transform:translateY(-10px) rotate(4deg)}}
+
+/* ---- カウントダウン・タイムアップ ---- */
+.overlay{position:fixed;inset:0;z-index:30;display:none;align-items:center;justify-content:center;background:rgba(18,13,51,.72);backdrop-filter:blur(4px)}
+.overlay.on{display:flex}
+.cd{font-family:var(--disp);font-size:min(40vw,240px);color:var(--star);text-shadow:0 0 60px rgba(255,211,92,.6);animation:cd .9s ease-out}
+@keyframes cd{0%{transform:scale(2.2);opacity:0}30%{opacity:1}100%{transform:scale(.9)}}
+.timeup{font-family:var(--disp);font-size:clamp(56px,11vw,120px);color:var(--coral);text-align:center;animation:cd 1s ease-out}
+.timeup small{display:block;font-family:var(--body);font-weight:800;font-size:22px;color:var(--cream);margin-top:10px}
+
+/* ---- リザルト ---- */
+#result{overflow:auto;justify-content:center;padding:clamp(16px,3vw,34px)}
+.res{width:min(920px,100%);padding:clamp(24px,4vw,44px);text-align:center;position:relative;overflow:hidden;margin:auto}
+.rank{display:inline-block;margin:6px 0 4px;padding:8px 22px;border-radius:999px;font-weight:800;font-size:18px;color:#23124a;background:linear-gradient(90deg,var(--star),var(--coral))}
+.res h2{font-family:var(--disp);font-weight:400;font-size:clamp(34px,6vw,58px);margin:10px 0 4px}
+.res .sub{color:var(--muted);font-weight:700;margin-bottom:22px}
+.res-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:22px}
+.res-grid div{padding:16px 8px;border-radius:20px;background:rgba(0,0,0,.24)}
+.res-grid b{display:block;font-family:var(--disp);font-weight:400;font-size:clamp(28px,4.4vw,42px);color:var(--star)}
+.res-grid b small{font-size:.5em;color:var(--muted)}
+.res-grid span{font-size:13px;font-weight:800;color:var(--muted)}
+.trail{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:0 0 22px;min-height:40px}
+.trail .pl{width:46px;flex:none}
+.trail-empty{color:var(--muted);font-weight:700}
+.next-line{font-weight:800;font-size:18px;margin-bottom:22px}
+.next-line b{font-family:var(--disp);font-weight:400;color:var(--mint);font-size:24px}
+.confetti{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.confetti i{position:absolute;top:-20px;left:var(--x);width:var(--w);height:var(--h);background:var(--c);border-radius:2px;animation:fall var(--d) linear var(--dl) infinite}
+@keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
+
+/* ---- 設定 ---- */
+.sheet{width:min(520px,92vw);padding:26px;max-height:90dvh;overflow:auto}
+.sheet h3{margin:0 0 4px;font-family:var(--disp);font-weight:400;font-size:26px}
+.sheet p{margin:0 0 18px;color:var(--muted);font-size:13px;font-weight:700}
+.set-row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--line);font-weight:800}
+.seg{display:flex;gap:6px}
+.seg button{padding:8px 12px;border-radius:12px;background:rgba(255,255,255,.08);font-weight:800;font-size:14px}
+.seg button.on{background:var(--star);color:#23124a}
+.danger-btn{color:var(--coral);font-weight:800;padding:8px 12px;border-radius:12px;box-shadow:inset 0 0 0 1px var(--coral)}
+
+@media (max-width:820px){
+  .home-grid{grid-template-columns:1fr}
+  .stage{grid-template-columns:1fr;grid-template-rows:1fr auto}
+  .pad{grid-template-columns:repeat(6,1fr);padding:10px;gap:8px}
+  .key{min-height:52px;font-size:26px}
+  .key{grid-column:span 2}
+  .key.ok{grid-column:span 6}
+  .res-grid{grid-template-columns:repeat(2,1fr)}
+  .hud .who{display:none}
+}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;animation-iteration-count:1!important}}
+</style>
+</head>
+<body>
+<div class="sky"></div>
+<div class="stars" id="stars"></div>
+
+<div class="app">
+  <!-- セッション中の上部バー（全体10分） -->
+  <div class="hud" id="hud">
+    <span class="who" id="hudWho"></span>
+    <div class="fuel" aria-label="のこり時間"><i id="fuel"></i></div>
+    <span class="gclock" id="gclock">10:00</span>
+    <button class="quit" id="quitBtn">おわる</button>
+  </div>
+
+  <!-- ホーム -->
+  <section class="screen on" id="home">
+    <div class="home-wrap">
+      <div class="home-top">
+        <div class="logo"><small>10分間の計算の旅・第2章</small><b>けいさん<br>スターロード<span class="v2">2</span></b><span class="sub-en">GALAXY EDITION — LEVEL 30</span></div>
+        
+      </div>
+      <p class="lead">1つの星（レベル）は<b>60秒</b>。<b>ぜんぶ正解</b>でつぎの星へワープ！<br>まちがえたり時間ぎれになったら、同じ星にもう一度チャレンジ。どこまで進めるかな？</p>
+
+      <div class="home-grid">
+        <div class="card panel">
+          <h3>パイロット</h3>
+          <div class="name-row"><input id="nameInput" maxlength="12" placeholder="なまえ（または番号）" autocomplete="off"></div>
+          <div class="save-line" id="saveLine"></div>
+          <div class="rules">
+            <div class="rule"><b id="ruleTotal">10分</b><span>ぜんたいの時間</span></div>
+            <div class="rule"><b id="ruleLevel">60秒</b><span>1つの星の時間</span></div>
+            <div class="rule"><b>30</b><span>星（レベル）の数</span></div>
+          </div>
+          <div class="hint-line2">同じ名前にすると記録がつながります。出席番号だけでもOK。</div>
+          <div class="start-row">
+            <button class="btn" id="startBtn">Lv1 から しゅっぱつ</button>
+            <small>右の星図をタップすると、スタートする星をえらべるよ（Lv20をクリアすると「ネクスト銀河」がひらく！）</small>
+          </div>
+        </div>
+        <div class="card panel">
+          <h3>星図</h3>
+          <div class="galaxy" id="galaxy"></div>
+          <div class="gx-hint">★はその星のベスト記録。<b>Sランク</b>＝一発クリア＋のこり時間40%以上。<br>Lv20をクリアすると「ネクスト銀河」が解放される！</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 作戦画面 -->
+  <section class="screen center" id="brief">
+    <div class="card brief" id="briefCard">
+      <div class="planet-big" id="bPlanet">1</div>
+      <div class="eyebrow" id="bStage"></div>
+      <h2 id="bTitle"></h2>
+      <div class="mission" id="bMission"></div>
+      <div class="tip" id="bTip"></div>
+      <button class="btn" id="goBtn">はっしん！</button>
+      <div class="tries" id="bTries"></div>
+    </div>
+  </section>
+
+  <!-- プレイ -->
+  <section class="screen" id="play">
+    <div class="lvbar">
+      <div class="lvtag"><div class="dot" id="pDot">1</div><div><small id="pStage"></small><b id="pTitle"></b></div></div>
+      <div class="pips" id="pips"></div>
+      <div class="ring" id="ring"><svg viewBox="0 0 80 80"><circle class="bg" cx="40" cy="40" r="34"/><circle class="fg" id="ringFg" cx="40" cy="40" r="34" stroke-dasharray="213.6" stroke-dashoffset="0"/></svg><span id="ringNum">60</span></div>
+    </div>
+    <div class="stage">
+      <div class="card qzone" id="qzone">
+        <div class="qcount" id="qcount">1 / 10</div>
+        <div class="eq" id="eq"></div>
+        <div class="feedback" id="feedback">答えを入れて「決定」</div>
+      </div>
+      <div class="card pad" id="pad"></div>
+    </div>
+  </section>
+
+  <!-- レベルクリア -->
+  <section class="screen center" id="clear">
+    <div class="card brief clear" id="clearCard">
+      <div class="warp" id="warp"></div>
+      <svg class="rocket" viewBox="0 0 120 120" aria-hidden="true">
+        <g transform="rotate(45 60 60)">
+          <path d="M60 10c14 12 20 30 20 50v22H40V60c0-20 6-38 20-50z" fill="#fff7e8"/>
+          <circle cx="60" cy="50" r="10" fill="#7cc8ff" stroke="#2a2170" stroke-width="4"/>
+          <path d="M40 66L26 84v8l14-6zM80 66l14 18v8l-14-6z" fill="#ff7ea8"/>
+          <path d="M48 82h24l-4 10H52z" fill="#c29bff"/>
+          <path d="M52 94c2 10 8 16 8 16s6-6 8-16z" fill="#ffd35c"/>
+        </g>
+      </svg>
+      <div class="eyebrow" id="cStage"></div>
+      <div class="result-hero" id="cTitle">クリア！</div>
+      <div class="bigstars" id="cStars"><i>★</i><i>★</i><i>★</i></div>
+      <div class="stat-line" id="cStats"></div>
+      <button class="btn" id="nextBtn">つぎの星へワープ</button>
+    </div>
+  </section>
+
+  <!-- ミス／時間ぎれ -->
+  <section class="screen center" id="fail">
+    <div class="card brief fail">
+      <div class="eyebrow" id="fStage"></div>
+      <div class="result-hero" id="fTitle">おしい！</div>
+      <div class="miss-box" id="fBox"></div>
+      <button class="btn" id="retryBtn">もう一度チャレンジ</button>
+      <div class="tries" id="fTries"></div>
+    </div>
+  </section>
+
+  <!-- リザルト -->
+  <section class="screen" id="result">
+    <div class="card res">
+      <div class="confetti" id="confetti"></div>
+      <div class="eyebrow" style="--c:var(--mint)">きょうの旅のきろく</div>
+      <h2 id="rName"></h2>
+      <div class="rank" id="rRank"></div>
+      <div class="sub" id="rSub"></div>
+      <div class="res-grid">
+        <div><b id="rMax">1</b><span>とうたつレベル</span></div>
+        <div><b id="rCleared">0</b><span>クリアした星</span></div>
+        <div><b id="rCorrect">0</b><span>正解した問題</span></div>
+        <div><b id="rRate">0<small>%</small></b><span>正解りつ</span></div>
+      </div>
+      <div class="trail" id="rTrail"></div>
+      <div class="next-line" id="rNext"></div>
+      <button class="btn" id="homeBtn">ホームへもどる</button>
+    </div>
+  </section>
+</div>
+
+<div class="overlay" id="cdLayer"><div class="cd" id="cdNum">3</div></div>
+<div class="overlay" id="timeupLayer"><div class="timeup">タイムアップ！<small>きょうの旅はここまで</small></div></div>
+
+
+<script>
+/* ================= ユーティリティ ================= */
+const $=id=>document.getElementById(id);
+const r=(a,b)=>Math.floor(Math.random()*(b-a+1))+a;
+const pick=a=>a[r(0,a.length-1)];
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=r(0,i);[a[i],a[j]]=[a[j],a[i]];}return a;};
+const fmt=ms=>{const s=Math.max(0,Math.ceil(ms/1000));return `${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`;};
+const Q=(t,a)=>({t,a});
+
+/* ================= レベル設計 ================= */
+const STAGES=[
+  {name:'たし算星雲',c:'var(--mint)'},
+  {name:'ひき算星雲',c:'var(--sky)'},
+  {name:'かけ算星雲',c:'var(--star)'},
+  {name:'わり算星雲',c:'var(--coral)'},
+  {name:'チャレンジ銀河',c:'var(--lilac)'},
+  {name:'ネクスト銀河',c:'#ffb35c'},
+  {name:'頭のダンジョン',c:'#9fe08f'}
+];
+// set: 固定問題（毎回じゅんばんだけシャッフル）／ one: ランダム1問を作る関数
+const LEVELS=[
+ {s:0,title:'10のなかま',n:12,tip:'<em>1と9、2と8、3と7、4と6、5と5</em>。ぱっと言えると、くりあがり・くりさがりがグンと楽になる！',
+  set:[Q('1 + □ = 10',9),Q('2 + □ = 10',8),Q('3 + □ = 10',7),Q('4 + □ = 10',6),Q('5 + □ = 10',5),Q('6 + □ = 10',4),Q('7 + □ = 10',3),Q('8 + □ = 10',2),Q('9 + □ = 10',1),Q('□ + 3 = 10',7),Q('□ + 6 = 10',4),Q('□ + 8 = 10',2)]},
+ {s:0,title:'100のなかま',n:10,tip:'100のなかまは<em>「十の位は合わせて9、一の位は合わせて10」</em>。25→75、64→36。',
+  set:[Q('30 + □ = 100',70),Q('70 + □ = 100',30),Q('60 + □ = 100',40),Q('25 + □ = 100',75),Q('75 + □ = 100',25),Q('45 + □ = 100',55),Q('15 + □ = 100',85),Q('64 + □ = 100',36),Q('82 + □ = 100',18),Q('□ + 37 = 100',63)]},
+ {s:0,title:'くりあがりの達人',n:12,tip:'8 + 7 は<em>「8にあと2で10、のこり5で15」</em>。10のなかまを使ってまず10をつくろう。',
+  set:[Q('8 + 7',15),Q('9 + 6',15),Q('7 + 5',12),Q('6 + 8',14),Q('28 + 5',33),Q('47 + 6',53),Q('39 + 4',43),Q('56 + 7',63),Q('65 + 9',74),Q('74 + 8',82),Q('18 + 9',27),Q('83 + 8',91)]},
+ {s:0,title:'2けた＋2けた',n:10,tip:'29 + 15 は<em>「30 + 15 − 1」</em>と考えると速い。キリのいい数にしてから直そう。',
+  set:[Q('38 + 20',58),Q('45 + 30',75),Q('60 + 27',87),Q('23 + 45',68),Q('34 + 52',86),Q('29 + 15',44),Q('48 + 26',74),Q('37 + 37',74),Q('56 + 28',84),Q('19 + 47',66)]},
+ {s:0,title:'たし算ラッシュ',n:10,tip:'毎回ちがう問題が出るよ。<em>一の位から</em>、くりあがりの1をわすれずに！',
+  one:()=>{let a,b;do{a=r(15,89);b=r(12,79);}while((a%10)+(b%10)<10);return Q(`${a} + ${b}`,a+b);}},
+
+ {s:1,title:'キリの数からひく',n:10,tip:'100 − 36 は<em>「100のなかま」</em>を思い出せば一瞬。ひき算もたし算の友だち。',
+  set:[Q('100 − 40',60),Q('100 − 35',65),Q('100 − 72',28),Q('50 − 18',32),Q('60 − 24',36),Q('100 − 8',92),Q('100 − 56',44),Q('80 − 45',35),Q('100 − 91',9),Q('70 − 33',37)]},
+ {s:1,title:'くりさがりの達人',n:12,tip:'13 − 6 は<em>「10 − 6 = 4、4 + 3 = 7」</em>。10からひいて、のこりをたそう。',
+  set:[Q('15 − 8',7),Q('13 − 6',7),Q('12 − 9',3),Q('17 − 8',9),Q('32 − 5',27),Q('41 − 7',34),Q('53 − 6',47),Q('64 − 9',55),Q('70 − 4',66),Q('86 − 8',78),Q('25 − 7',18),Q('91 − 3',88)]},
+ {s:1,title:'ひき算ラッシュ',n:10,tip:'72 − 38 は<em>「72 − 40 + 2」</em>でもOK。自分のやりやすい方法で！',
+  one:()=>{let a,b;do{a=r(31,99);b=r(12,a-6);}while(a%10>=b%10);return Q(`${a} − ${b}`,a-b);}},
+
+ {s:2,title:'九九マスター（6〜9の段）',n:15,tip:'まちがえやすいのは<em>7×8=56、6×7=42、8×6=48、9×7=63</em>。ここを見のがすな！',
+  one:()=>{const a=pick([6,7,8,9]),b=r(2,9);return Math.random()<.5?Q(`${a} × ${b}`,a*b):Q(`${b} × ${a}`,a*b);}},
+ {s:2,title:'何十 × 1けた',n:10,tip:'30 × 4 は<em>「3 × 4 = 12 に 0 をつける」</em>。12 × 4 は「10×4 と 2×4」に分けよう。',
+  set:[Q('20 × 4',80),Q('30 × 3',90),Q('40 × 6',240),Q('50 × 8',400),Q('70 × 5',350),Q('12 × 4',48),Q('21 × 3',63),Q('13 × 3',39),Q('32 × 3',96),Q('11 × 7',77)]},
+ {s:2,title:'2けた × 1けた',n:8,tip:'17 × 6 は<em>「10×6 = 60 と 7×6 = 42 で 102」</em>。分けてからたす！',
+  one:()=>{let a;do{a=r(12,49);}while(a%10===0);const b=r(3,9);return Q(`${a} × ${b}`,a*b);}},
+
+ {s:3,title:'九九のぎゃく',n:15,tip:'わり算は九九のぎゃく。56 ÷ 8 は<em>「8 × いくつ = 56？」</em>と考えよう。',
+  one:()=>{const b=r(2,9),q=r(2,9);return Q(`${b*q} ÷ ${b}`,q);}},
+ {s:3,title:'キリのいいわり算',n:10,tip:'120 ÷ 4 は<em>「12 ÷ 4 = 3 に 0 をつける」</em>。0をかくして計算しよう。',
+  set:[Q('80 ÷ 4',20),Q('60 ÷ 3',20),Q('90 ÷ 3',30),Q('120 ÷ 4',30),Q('150 ÷ 5',30),Q('240 ÷ 6',40),Q('350 ÷ 7',50),Q('400 ÷ 8',50),Q('180 ÷ 9',20),Q('210 ÷ 3',70)]},
+ {s:3,title:'2けた ÷ 1けた',n:8,tip:'84 ÷ 4 は<em>「80 ÷ 4 = 20 と 4 ÷ 4 = 1 で 21」</em>。分けて考えよう。',
+  one:()=>{const b=r(2,9);const q=r(11,Math.floor(99/b));return Q(`${b*q} ÷ ${b}`,q);}},
+
+ {s:4,title:'□をさがせ',n:10,tip:'□は<em>ぎゃくの計算</em>で見つかる。□ + 27 = 63 なら 63 − 27。',
+  one:()=>{const k=r(0,3);
+    if(k===0){const x=r(12,68),b=r(12,50);return Q(`□ + ${b} = ${x+b}`,x);}
+    if(k===1){const c=r(40,99),x=r(11,c-10);return Q(`${c} − □ = ${c-x}`,x);}
+    if(k===2){const x=r(2,9),b=r(2,9);return Q(`□ × ${b} = ${x*b}`,x);}
+    const b=r(2,9),q=r(2,9);return Q(`□ ÷ ${b} = ${q}`,b*q);}},
+ {s:4,title:'計算のじゅんばん',n:8,tip:'<em>( ) がいちばん先、つぎに × ÷、さいごに + −</em>。左から順にやるとワナにはまる！',
+  one:()=>{const k=r(0,4);
+    if(k===0){const a=r(2,20),b=r(2,9),c=r(2,9);return Q(`${a} + ${b} × ${c}`,a+b*c);}
+    if(k===1){const a=r(2,9),b=r(2,6),c=r(2,6);return Q(`(${a} + ${b}) × ${c}`,(a+b)*c);}
+    if(k===2){const b=r(2,6),c=r(2,6),a=b*c+r(1,30);return Q(`${a} − ${b} × ${c}`,a-b*c);}
+    if(k===3){const a=r(11,19),b=r(2,9),c=r(2,5);return Q(`(${a} − ${b}) × ${c}`,(a-b)*c);}
+    const c=r(2,9),q=r(2,9),a=r(2,30);return Q(`${a} + ${c*q} ÷ ${c}`,a+q);}},
+ {s:4,title:'くふうして計算',n:8,tip:'<em>25×4=100、5×2=10</em> はセットで見つけよう。99 は「100 − 1」と考えると速い。',
+  one:()=>{const k=r(0,4);
+    if(k===0){let x;do{x=r(11,89);}while(x%10===0);const y=r(12,60);return Q(`${x} + ${y} + ${100-x}`,y+100);}
+    if(k===1){const c=r(2,9);return Q(`25 × ${c} × 4`,100*c);}
+    if(k===2){const d=r(11,49);return Q(`5 × ${d} × 2`,10*d);}
+    if(k===3){const n=r(12,88);return Q(`99 + ${n}`,99+n);}
+    const n=r(120,199);return Q(`${n} − 99`,n-99);}},
+ {s:4,title:'大きな数の計算',n:8,tip:'<em>0をかくして計算して、あとでもどす</em>。40 × 30 は 4 × 3 = 12 に 0 を2つ。',
+  one:()=>{const k=r(0,4);
+    if(k===0){const a=r(11,59)*10,b=r(11,99-a/10)*10;return Q(`${a} + ${b}`,a+b);}
+    if(k===1){const x=r(11,99)*10;return Q(`1000 − ${x}`,1000-x);}
+    if(k===2){const a=r(30,99)*10,b=r(11,a/10-1)*10;return Q(`${a} − ${b}`,a-b);}
+    if(k===3){const a=r(2,9)*10,b=r(2,9)*10;return Q(`${a} × ${b}`,a*b);}
+    const b=r(2,9),q=r(2,9);return Q(`${b*q*100} ÷ ${b}`,q*100);}},
+ {s:4,title:'ボス：ミックス',n:10,tip:'これまでの計算がぜんぶまざって出るよ。<em>記号をよく見て</em>、あわてずに！',
+  one:()=>LEVELS[pick([4,7,10,13,14,15])].one()},
+ {s:4,title:'ギャラクシーマスター',n:8,tip:'× 11 は<em>「10倍 + 1倍」</em>。1000 − 376 は「999 − 376 + 1」でくりさがりなし！',
+  one:()=>{const k=r(0,4);
+    if(k===0){const n=r(12,49);return Q(`${n} × 11`,n*11);}
+    if(k===1){const c=r(3,9)*4;return Q(`25 × ${c}`,25*c);}
+    if(k===2){const x=r(101,899);return Q(`1000 − ${x}`,1000-x);}
+    if(k===3){let b,q;do{b=r(2,9);q=r(12,99);}while(b*q<100);return Q(`${b*q} ÷ ${b}`,q);}
+    const a=r(1,9),b=r(1,9);return Q(`${10+a} × ${10+b}`,(10+a)*(10+b));}},
+ {s:5,title:'あまりのあるわり算',n:10,tip:'わり算は<em>商とあまり</em>をセットで。「7 × いくつ = これくらい」から考えると速い。あまりは必ず、わる数より小さくなる。',
+  set:[Q('85 ÷ 4 の 商',21),Q('85 ÷ 4 の あまり',1),Q('92 ÷ 3 の 商',30),Q('92 ÷ 3 の あまり',2),Q('76 ÷ 5 の 商',15),Q('61 ÷ 7 の 商',8),Q('61 ÷ 7 の あまり',5),Q('70 ÷ 6 の あまり',4),Q('83 ÷ 9 の あまり',2),Q('66 ÷ 7 の あまり',3)]},
+ {s:5,title:'あまりでじょうずに分ける',n:8,tip:'あまりの使いみちは3つ。<em>切捨て（組を作る）・切り上げ（台が必要）・あまりが答え</em>。何を聞かれているかを見分けよう。',
+  set:[Q('おかし34こを 5こずつの ばこに入れる。あまりは何こ？',4),Q('こども27人を 4人ずつの組にする。できる組は何組？（あまりはのぞく）',6),Q('バスは1台に6人。45人がのるには、バスが何台必要？',8),Q('本58さつを 7人に 8さつずつ配る。あまりは何さつ？',2),Q('テープ93cmを 10cmずつ切る。何本切れる？',9),Q('ペンは1箱に6本入る。30本なら何箱？',5),Q('たまごは1パックに12個入る。38個のあまりは何個？',2),Q('おかし44こを 8こずつ 6人に配る。足りなくなるのは何こ？',4)]},
+ {s:5,title:'小数のたし算・ひき算',n:10,tip:'小数点の位置をそろえて。<em>1.2 + 0.8 = 2.0 で 2</em>。0.1 の集まりで考えるとわかりやすい。4年でこれから習う、先取りレベル！',
+  one:()=>{const a=r(2,45),b=r(1,49);return Math.random()<.5?Q(`${(a/10).toFixed(1)} + ${(b/10).toFixed(1)}`,Number(((a+b)/10).toFixed(1))):Q(`${(Math.max(a,b)/10).toFixed(1)} − ${(Math.min(a,b)/10).toFixed(1)}`,Number((Math.abs(a-b)/10).toFixed(1)));}},
+ {s:5,title:'2けた × 2けた',n:8,tip:'<em>13 × 15 = 13×10 + 13×5 = 130 + 65 = 195</em>。十の位と一の位に分けて、たしざる。',
+  set:[Q('13 × 15',195),Q('14 × 12',168),Q('16 × 13',208),Q('21 × 14',294),Q('23 × 15',345),Q('25 × 12',300),Q('31 × 13',403),Q('42 × 11',462)]},
+ {s:5,title:'がい算（見当をつける）',n:10,tip:'答えをきちんと求める前に、<em>キリのいい数</em>でおおよその大きさをつかむ。計算の見直しにも使える、大事な力。',
+  set:[Q('49 × 21 ≈（50 × 20 として）',1000),Q('198 + 402 ≈（200 + 400 として）',600),Q('596 − 298 ≈（600 − 300 として）',300),Q('23 × 19 ≈（23 × 20 として）',460),Q('98 + 51 ≈（100 + 50 として）',150),Q('101 × 8 ≈（100 × 8 として）',800),Q('59 × 31 ≈（60 × 30 として）',1800),Q('448 + 251 ≈（450 + 250 として）',700),Q('197 × 4 ≈（200 × 4 として）',800),Q('4.2 + 5.9 ≈（4 + 6 として）',10)]},
+ {s:5,title:'速算の技',n:8,tip:'<em>×99 は ×100 − 1ぶん、×5 は ×10 ÷ 2、÷5 は ÷10 × 2</em>。きまりを使えば、大きな数も暗算できる。',
+  set:[Q('47 × 99 + 47',4700),Q('25 × 36',900),Q('5 × 64 × 2',640),Q('125 × 16',2000),Q('998 + 475',1473),Q('1000 − 698',302),Q('34 × 5',170),Q('720 ÷ 5',144)]},
+ {s:6,title:'虫食い算',n:8,tip:'隠れた数字は<em>ぎゃくに計算</em>すれば出る。「くりあがり」も忘れずに、すきまをうめていこう。',
+  one:()=>{ if(Math.random()<.5){ const t=r(13,88),b=r(11,99),s=t+b; if(Math.random()<.5){const d=t%10;return Q(`${Math.floor(t/10)}□ + ${b} = ${s} の □`,d);} const d=Math.floor(t/10);return Q(`□${t%10} + ${b} = ${s} の □`,d);} const a=r(25,99),b=r(11,a-10),c=a-b; if(c<10)return Q(`${a} − ${b} = □ の □`,c); if(Math.random()<.5){const d=c%10;return Q(`${a} − ${b} = ${Math.floor(c/10)}□ の □`,d);} const d=Math.floor(c/10);return Q(`${a} − ${b} = □${c%10} の □`,d);} },
+ {s:6,title:'マークのなぞ',n:8,tip:'<em>同じマークには同じ数</em>が入る。まず「これだけは決まる」という式から、ひとつずつ決めていこう。',
+  set:[Q('△ + △ + △ = ○ × △（△は0ではない）。○はいくつ？',3),Q('□ × □ = □ + □（同じ数、0はのぞく）。□はいくつ？',2),Q('し + し = 8、し × き = 12。きはいくつ？',3),Q('あ + あ + あ = 12、あ × い = 20。いはいくつ？',5),Q('△ × △ = 16、△ + □ = 9。□はいくつ？',5),Q('○ ÷ △ = △、○ = 36。△はいくつ？',6),Q('い + い = ろ、ろ × ろ = 36。いはいくつ？',3),Q('か × か = 25、か + き = 10。きはいくつ？',5)]},
+ {s:6,title:'数列のきまり',n:10,tip:'「どこが同じになっているか」を探す。<em>たす数が同じ？倍になっている？増え方が変わる？</em>きまりは、ちがう角度から探してみる。',
+  one:()=>{const k=r(0,5);let seq=[],nx=0;
+   if(k===0){const st=r(2,9),d=r(2,9);for(let i=0;i<4;i++)seq.push(st+i*d);nx=st+4*d;}
+   else if(k===1){const st=r(1,3);for(let i=0;i<4;i++)seq.push(st*(2**i));nx=st*16;}
+   else if(k===2){const st=r(2,5),d=r(3,7);for(let i=0;i<4;i++)seq.push(st+i*i);nx=st+16;}
+   else if(k===3){const v=r(2,6);for(let i=0;i<4;i++)seq.push(v*(3**(3-i)));nx=v;}
+   else if(k===4){seq=[1,1,2,3,5];nx=8;}
+   else{seq=[1,3,6,10];nx=15;}
+   return Q(`${seq.join('、')} … の つぎの数`,nx);}},
+ {s:6,title:'頭のダンジョン',n:8,tip:'すぐ式を作らない。<em>頭の中で「やってみる」、図にかいてみる</em>。これが「考える力」の基本。',
+  set:[Q('弟は8さい。兄は弟より2さい上。5年後、兄は何さい？',15),Q('パン1かたまりを 3回切って、最も多くすると何こになる？',4),Q('3時の3時間後、とけいの短い針は何時をさす？',6),Q('りんご5こを 3人に 同じ数ずつ分けると、あまりは何こ？',2),Q('ロープを4つに切るには、最低何回切ればいい？',3),Q('1から10までの数を ぜんぶたすといくつ？',55),Q('紙を2回折ると、重なった部分は何枚ぶん？',4),Q('1周250mの池を2周すると、何m？',500)]}
+];
+const MAXLV=LEVELS.length;
+const RANKS=[[1,'みならいパイロット'],[4,'スターパイロット'],[7,'コメットライダー'],[10,'ギャラクシー探検家'],[13,'星雲キャプテン'],[16,'銀河コマンダー'],[19,'宇宙の伝説'],[21,'ギャラクシーマスター'],[24,'ネクストパイオニア'],[27,'パズルハンター'],[30,'ダンジョン制覇'],[31,'銀河の覇者']];
+
+function buildQuestions(lv){
+  const L=LEVELS[lv-1];
+  if(L.set) return shuffle(L.set).slice(0,L.n);
+  const seen=new Set(),out=[];let guard=0;
+  while(out.length<L.n&&guard++<5000){const q=L.one();if(!seen.has(q.t)){seen.add(q.t);out.push(q);}}
+  return out;
+}
+
+/* ================= 保存 ================= */
+const KEY='keisan-starroad-v1';
+const P=new URLSearchParams(location.search);
+const num=(k,d)=>{const v=parseFloat(P.get(k));return Number.isFinite(v)&&v>0?v:d;};
+// 設定はURLの指示（?t=全体分 &l=1レベル秒 &s=音 &u=開放 &reset=1）で決まる。生徒用ファイルには設定画面を置かない。
+const SET={total:num('t',10),level:num('l',60),sound:P.get('s')==='0'?0:1,unlock:P.get('u')==='1'?1:0};
+let store={players:{},last:'',settings:SET};
+try{const s=JSON.parse(localStorage.getItem(KEY));if(s&&s.players)store.players=s.players;if(s&&s.last)store.last=s.last;}catch(e){}
+store.settings=SET;
+let resetDone=false;
+if(P.get('reset')==='1'){try{localStorage.removeItem(KEY);}catch(e){}store.players={};store.last='';resetDone=true;
+  try{const u=new URL(location.href);u.searchParams.delete('reset');history.replaceState(null,'',u.toString());}catch(e){}}
+const persist=()=>{try{localStorage.setItem(KEY,JSON.stringify({players:store.players,last:store.last}));}catch(e){}};
+const pname=()=>($('nameInput').value.trim()||'ゲスト');
+const pdata=()=>store.players[pname()]||{max:1,best:{}};
+
+/* ================= サウンド ================= */
+let actx=null;
+function tone(kind){
+  if(!store.settings.sound) return;
+  try{
+    actx=actx||new (window.AudioContext||window.webkitAudioContext)();
+    const seq={good:[[660,.06],[880,.08]],bad:[[220,.14],[165,.2]],tick:[[900,.04]],go:[[523,.1],[659,.1],[784,.1],[1047,.22]],clear:[[523,.09],[659,.09],[784,.09],[1047,.09],[1319,.3]],over:[[392,.18],[330,.18],[262,.35]]}[kind];
+    let t=actx.currentTime;
+    seq.forEach(([f,d])=>{const o=actx.createOscillator(),g=actx.createGain();o.type=kind==='bad'?'triangle':'sine';o.frequency.value=f;g.gain.setValueAtTime(.09,t);g.gain.exponentialRampToValueAtTime(.001,t+d+.05);o.connect(g);g.connect(actx.destination);o.start(t);o.stop(t+d+.06);t+=d*.9;});
+  }catch(e){}
+}
+
+/* ================= 状態 ================= */
+let S=null;       // セッション
+let selLv=1;      // ホームで選んだ星
+let phase='home'; // home / brief / countdown / play / judge / clear / fail / over
+let ticker=null;
+
+function show(id){document.querySelectorAll('.screen').forEach(e=>e.classList.remove('on'));$(id).classList.add('on');}
+const stageOf=lv=>STAGES[LEVELS[lv-1].s];
+const starsFor=(leftMs,limitMs)=>leftMs>=limitMs*.5?3:leftMs>=limitMs*.25?2:1;
+
+/* ================= ホーム ================= */
+function renderHome(){
+  const d=pdata();
+  if(d.best&&d.best[20]&&d.max<21)d.max=21;
+  const unlocked=store.settings.unlock?MAXLV:Math.min(d.max,MAXLV);
+  if(selLv>unlocked) selLv=unlocked;
+  $('saveLine').innerHTML=d.max>1||Object.keys(d.best).length?`${pname()} さんは <b>Lv${Math.min(d.max,MAXLV)}</b> まで進んでいるよ`:`はじめての人は Lv1 からスタート！`;
+  $('ruleTotal').textContent=store.settings.total+'分';
+  $('ruleLevel').textContent=store.settings.level+'秒';
+  $('startBtn').textContent=`Lv${selLv} から しゅっぱつ`;
+  const g=$('galaxy');g.innerHTML='';
+  STAGES.forEach((st,si)=>{
+    const row=document.createElement('div');row.className='gx-row';row.style.setProperty('--c',st.c);
+    row.innerHTML=`<div class="gx-name">${st.name}</div><div class="gx-planets"></div>`;
+    const wrap=row.lastChild;
+    LEVELS.forEach((L,i)=>{ if(L.s!==si) return; const lv=i+1;
+      const b=document.createElement('button');b.className='pl'+(lv>unlocked?' lock':'')+(lv===selLv?' sel':'');
+      b.style.setProperty('--c',st.c);b.textContent=lv;b.setAttribute('aria-label',`レベル${lv} ${L.title}`);
+      const best=d.best[lv],rk=(d.rank||{})[lv]||0;
+      if(best)b.insertAdjacentHTML('beforeend',`<span class="st">${rk===4?'★★★S':'★'.repeat(best)}</span>`);
+      b.onclick=()=>{if(lv>unlocked)return;selLv=lv;renderHome();};
+      wrap.appendChild(b);});
+    g.appendChild(row);
+  });
+}
+$('nameInput').addEventListener('input',()=>{selLv=Math.min(pdata().max,MAXLV);renderHome();});
+
+/* ================= セッション ================= */
+function startSession(){
+  store.last=pname();persist();
+  S={name:pname(),start:performance.now(),total:store.settings.total*60000,limit:store.settings.level*1000,
+     lv:selLv,startLv:selLv,maxLv:selLv,cleared:[],answered:0,correct:0,attempts:0,tries:{},masterClears:0};
+  $('hud').classList.add('on');$('hudWho').textContent=S.name;
+  clearInterval(ticker);ticker=setInterval(tick,100);
+  showBrief();
+}
+function gLeft(){return S.total-(performance.now()-S.start);}
+function tick(){
+  if(!S) return;
+  const left=gLeft();
+  $('gclock').textContent=fmt(left);
+  $('gclock').classList.toggle('hurry',left<60000);
+  $('fuel').style.width=Math.max(0,left/S.total*100)+'%';
+  if(left<=0){timeUp();return;}
+  if(phase==='play'){
+    const lleft=S.limit-(performance.now()-S.lvStart);
+    const sec=Math.max(0,Math.ceil(lleft/1000));
+    if(sec!==S.lastSec){S.lastSec=sec;$('ringNum').textContent=sec;if(sec<=5&&sec>0)tone('tick');}
+    $('ringFg').style.strokeDashoffset=213.6*(1-Math.max(0,lleft)/S.limit);
+    $('ring').className='ring'+(lleft<S.limit*.2?' danger':lleft<S.limit*.45?' warn':'');
+    if(lleft<=0) failLevel('time');
+  }
+}
+
+function showBrief(){
+  phase='brief';
+  const lv=S.lv,L=LEVELS[lv-1],st=stageOf(lv);
+  $('briefCard').style.setProperty('--c',st.c);
+  $('bPlanet').textContent=lv;
+  $('bStage').textContent=`${st.name} ／ レベル ${lv}${lv===MAXLV&&S.masterClears?'（エンドレス）':''}`;
+  $('bTitle').textContent=L.title;
+  $('bMission').innerHTML=`<span class="chip"><b>${S.limit/1000}</b>秒で</span><span class="chip"><b>${L.n}</b>問</span><span class="chip"><b>ぜんぶ</b>正解でクリア</span>`;
+  $('bTip').innerHTML=L.tip;
+  const t=S.tries[lv]||0;
+  $('bTries').textContent=t?`この星へのチャレンジ ${t+1}回目`:'';
+  show('brief');
+}
+
+function countdown(then){
+  phase='countdown';
+  const layer=$('cdLayer'),num=$('cdNum');let n=3;
+  layer.classList.add('on');
+  const step=()=>{
+    if(phase!=='countdown'){layer.classList.remove('on');return;}
+    if(n===0){layer.classList.remove('on');tone('go');then();return;}
+    num.textContent=n;num.style.animation='none';void num.offsetWidth;num.style.animation='';tone('tick');n--;setTimeout(step,800);
+  };step();
+}
+
+function beginLevel(){
+  const lv=S.lv,L=LEVELS[lv-1],st=stageOf(lv);
+  S.qs=buildQuestions(lv);S.idx=0;S.input='';S.tries[lv]=(S.tries[lv]||0)+1;S.attempts++;
+  S.lvStart=performance.now();S.lastSec=null;
+  $('play').style.setProperty('--c',st.c);
+  $('pDot').textContent=lv;$('pStage').textContent=st.name;$('pTitle').textContent=L.title;
+  $('pips').innerHTML='<i></i>'.repeat(L.n);
+  $('ringNum').textContent=S.limit/1000;$('ringFg').style.strokeDashoffset=0;$('ring').className='ring';
+  show('play');phase='play';renderQ();
+}
+
+function renderQ(){
+  const q=S.qs[S.idx];
+  $('qcount').textContent=`${S.idx+1} / ${S.qs.length}`;
+  const slot=`<span class="slot" id="slot">${S.input}</span>`;
+  $('eq').innerHTML=(q.t.includes('□')?q.t:`${q.t} = □`).split(' ').map(p=>p==='□'?slot:p.includes('□')?p.replace('□',slot):`<span>${p}</span>`).join('');
+  $('feedback').textContent='答えを入れて「決定」';$('feedback').style.color='';
+  $('qzone').classList.remove('bad');
+}
+const updSlot=()=>{const s=$('slot');if(s)s.textContent=S.input;};
+
+function press(k){
+  if(phase!=='play') return;
+  if(k==='del'){S.input=S.input.slice(0,-1);updSlot();return;}
+  if(k==='ok'){submit();return;}
+  if(k==='.'){ if(S.input.includes('.'))return; if(S.input==='')S.input='0'; S.input+='.'; updSlot(); return; }
+  if(S.input.length>=5) return;
+  if(S.input===''&&k==='0'){S.input='0';updSlot();return;}
+  if(S.input==='0') S.input='';
+  S.input+=k;updSlot();
+}
+
+function submit(){
+  if(S.input===''){$('feedback').textContent='答えを入れてから「決定」だよ';return;}
+  const q=S.qs[S.idx],val=Number(S.input);S.answered++;
+  if(val===q.a){
+    S.correct++;tone('good');
+    $('pips').children[S.idx].classList.add('done');
+    const z=$('qzone');z.classList.remove('good');void z.offsetWidth;z.classList.add('good');
+    S.idx++;S.input='';
+    if(S.idx>=S.qs.length){clearLevel();return;}
+    renderQ();
+  }else{
+    phase='judge';tone('bad');
+    $('qzone').classList.add('bad');
+    $('feedback').innerHTML=`正しい答えは <b style="color:var(--mint);font-size:1.3em">${q.a}</b>`;
+    S.missed={q,your:S.input};
+    setTimeout(()=>{if(phase==='judge')failLevel('miss');},1300);
+  }
+}
+
+function clearLevel(){
+  phase='clear';tone('clear');
+  const lv=S.lv,used=performance.now()-S.lvStart,left=S.limit-used,stars=starsFor(left,S.limit),st=stageOf(lv);
+  S.cleared.push({lv,stars});
+  const d=store.players[S.name]||(store.players[S.name]={max:1,best:{}});
+  d.best[lv]=Math.max(d.best[lv]||0,stars);
+  const t=S.tries[lv]||1,rk=(t===1&&left>=S.limit*.4)?4:t===1?3:2;
+  d.rank=d.rank||{};d.rank[lv]=Math.max(d.rank[lv]||0,rk);
+  d.max=Math.max(d.max,Math.min(lv+1,MAXLV));persist();
+  $('clearCard').style.setProperty('--c',st.c);
+  $('cStage').textContent=`${st.name} ／ レベル ${lv}`;
+  $('cTitle').textContent=lv===MAXLV?'マスタークリア！':'クリア！';
+  [...$('cStars').children].forEach((e,i)=>{e.className=i<stars?'on':'';});
+  const rkm={4:'S',3:'A',2:'B'}[rk];
+  $('cStats').innerHTML=`<span class="chip">タイム <b>${(used/1000).toFixed(1)}</b>秒</span><span class="chip">のこり <b>${Math.max(0,left/1000).toFixed(1)}</b>秒</span><span class="chip">ランク <b>${rkm}</b></span>`;
+  $('nextBtn').textContent=lv===MAXLV?'もう一度マスターに挑む':'つぎの星へワープ';
+  $('warp').innerHTML=Array.from({length:18},()=>`<i style="--y:${r(0,100)}%;--w:${r(80,240)}px;--d:${(Math.random()*.8+.5).toFixed(2)}s;--dl:-${Math.random().toFixed(2)}s"></i>`).join('');
+  show('clear');
+}
+
+function failLevel(reason){
+  phase='fail';
+  const lv=S.lv,st=stageOf(lv);
+  $('fStage').textContent=`${st.name} ／ レベル ${lv}`;
+  if(reason==='time'){
+    tone('bad');
+    $('fTitle').textContent='時間ぎれ！';
+    $('fBox').innerHTML=`<div class="eqs">あと <span class="ans">${S.qs.length-S.idx}</span> 問！</div><div class="yours">${S.qs.length}問中 ${S.idx}問 正解まで進んだよ。もう少し！</div>`;
+  }else{
+    const {q,your}=S.missed;
+    $('fTitle').textContent='おしい！';
+    const full=q.t.includes('□')?q.t.replace('□',`<span class="ans">${q.a}</span>`):`${q.t} = <span class="ans">${q.a}</span>`;
+    $('fBox').innerHTML=`<div class="eqs">${full}</div><div class="yours">きみの答え：<s>${your}</s>　→　この答えをおぼえて、もう一回！</div>`;
+  }
+  $('retryBtn').textContent=`もう一度 Lv${lv} にチャレンジ`;
+  $('fTries').textContent=LEVELS[lv-1].set?'同じ問題がじゅんばんを変えて出るよ':'また新しい問題が出るよ';
+  show('fail');
+}
+
+function nextLevel(){
+  if(S.lv===MAXLV){S.masterClears++;}
+  else{S.lv++;S.maxLv=Math.max(S.maxLv,S.lv);}
+  showBrief();
+}
+
+function timeUp(){
+  if(phase==='over') return;
+  phase='over';clearInterval(ticker);
+  $('cdLayer').classList.remove('on');
+  tone('over');
+  $('gclock').textContent='0:00';$('fuel').style.width='0%';
+  $('timeupLayer').classList.add('on');
+  setTimeout(()=>{$('timeupLayer').classList.remove('on');showResult();},2000);
+}
+
+function showResult(){
+  phase='over';
+  $('hud').classList.remove('on');
+  const d=store.players[S.name]||{max:1};
+  const rate=S.answered?Math.round(S.correct/S.answered*100):0;
+  const reached=S.cleared.length?Math.max(...S.cleared.map(c=>c.lv)):0;
+  const rankLv=Math.max(S.maxLv,reached+(reached===MAXLV?1:0));
+  let rank=RANKS[0][1];RANKS.forEach(([n,t])=>{if(rankLv>=n)rank=t;});
+  $('rName').textContent=`${S.name} さん`;
+  $('rRank').textContent=rank;
+  $('rSub').textContent=S.cleared.length?`Lv${S.startLv} から出発して、${S.cleared.length}こ の星をクリア！`:`Lv${S.startLv} に ${S.attempts}回 チャレンジ。つぎはきっと突破できる！`;
+  $('rMax').textContent=S.maxLv;
+  $('rCleared').textContent=S.cleared.length;
+  $('rCorrect').textContent=S.correct;
+  $('rRate').innerHTML=`${rate}<small>%</small>`;
+  $('rTrail').innerHTML=S.cleared.length?S.cleared.map(c=>`<div class="pl" style="--c:${stageOf(c.lv).c}">${c.lv}<span class="st">${'★'.repeat(c.stars)}</span></div>`).join(''):'<span class="trail-empty">まだクリアした星はないよ</span>';
+  $('rNext').innerHTML=`つぎの旅は <b>Lv${Math.min(d.max,MAXLV)}</b> からスタートできるよ`;
+  const cols=['#5ee6c1','#7cc8ff','#ffd35c','#ff7ea8','#c29bff','#fff7e8'];
+  $('confetti').innerHTML=S.cleared.length?Array.from({length:60},()=>`<i style="--x:${r(0,100)}%;--w:${r(6,11)}px;--h:${r(10,20)}px;--c:${pick(cols)};--d:${(Math.random()*3+3).toFixed(2)}s;--dl:-${(Math.random()*5).toFixed(2)}s"></i>`).join(''):'';
+  show('result');
+}
+
+function goHome(){
+  phase='home';S=null;clearInterval(ticker);
+  $('hud').classList.remove('on');
+  selLv=Math.min(pdata().max,MAXLV);renderHome();show('home');
+}
+
+/* ================= キーパッド・入力 ================= */
+(function buildPad(){
+  const keys=['7','8','9','4','5','6','1','2','3','.','0','del','ok'];
+  $('pad').innerHTML=keys.map(k=>`<button class="key${k==='del'?' del':k==='ok'?' ok':''}" data-k="${k}">${k==='del'?'けす':k==='ok'?'決定':k}</button>`).join('');
+  $('pad').addEventListener('pointerdown',e=>{const b=e.target.closest('.key');if(!b)return;e.preventDefault();press(b.dataset.k);});
+})();
+document.addEventListener('keydown',e=>{
+  if(document.activeElement===$('nameInput')){if(e.key==='Enter')$('nameInput').blur();return;}
+  if(phase==='play'){
+    if(/^[0-9.]$/.test(e.key)){press(e.key);e.preventDefault();}
+    else if(e.key==='Backspace'){press('del');e.preventDefault();}
+    else if(e.key==='Enter'){press('ok');e.preventDefault();}
+  }else if(e.key==='Enter'){
+    const map={brief:'goBtn',clear:'nextBtn',fail:'retryBtn'};
+    if(map[phase]){e.preventDefault();$(map[phase]).click();}
+  }
+});
+
+$('startBtn').onclick=startSession;
+$('goBtn').onclick=()=>countdown(beginLevel);
+$('nextBtn').onclick=nextLevel;
+$('retryBtn').onclick=showBrief;
+$('homeBtn').onclick=goHome;
+$('quitBtn').onclick=()=>{if(confirm('旅をおわりにして、リザルトを見る？')){clearInterval(ticker);phase='over';$('cdLayer').classList.remove('on');showResult();}};
+
+/* ================= 初期化 ================= */
+$('stars').innerHTML=Array.from({length:90},()=>`<i style="--x:${r(0,100)}%;--y:${r(0,100)}%;--s:${pick([1,1,2,2,3])}px;--d:${(Math.random()*3+1.5).toFixed(2)}s"></i>`).join('');
+$('nameInput').value=store.last||'';
+selLv=Math.min(pdata().max,MAXLV);
+renderHome();
+if(resetDone)$('saveLine').textContent='この端末の記録をけしました。';
+</script>
+</body>
+</html>
